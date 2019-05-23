@@ -1,25 +1,43 @@
 #ifndef __RENDERER__
 #define __RENDERER__
+#include "Component.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <list>
+#include "Input.h"
 #include "DataStorage.h"
 #include "DrawManager.h"
 #include "EventManager.h"
 #include "Engine.h"
 #include "GameObject.h"
-#include "Component.h"
+
+
 class GameObject;
 
 
-
+class Component
+{
+public:
+    GameObject * objPtr;
+    std::string name;
+    
+    bool operator==(Component & other)
+    {
+        return this->name == other.name ? true : false ;
+    }
+    
+    Component()
+    {
+        name = "Component";
+    }
+}; 
 
 
 class Coords : public Component
 {
 public:
-    std::vector <int> rectCoords; 
-    int angle;
+    std::vector <double> rectCoords; 
+    int angle = 0;
     
     Coords operator+(Coords& other)
     {
@@ -32,32 +50,42 @@ public:
     
     Coords() : Component() 
     {
-        name = "Coords";
-        rectCoords = std::vector <int> (3,0);
+        name = typeid(Coords).name();
+        rectCoords = std::vector <double> {0,0};
         angle = 0;
     };   
+    
+    std::vector <int> toSfml()
+    {
+        std::vector <int> sfmlcoords = {0,0,0};
+        sfmlcoords[0] = int(rectCoords[0])  ;
+        sfmlcoords[1] =  int (300 -rectCoords[1]);
+        sfmlcoords[2] = -angle;
+        return sfmlcoords;
+    }
 };
 
 class Drawable : public sf::Sprite
 {
 public:
 
-    Drawable() : Sprite()
-    {}
+    Drawable() : sf::Sprite()
+    {
+        
+    }
     
-    Drawable(sf::Sprite & X) : Sprite(X) {};
+    Drawable(sf::Sprite & X) : sf::Sprite(X) {};
     
     Coords localCoords;
     
-    void setLocalCoords(int x, int y, int a)
+    void setLocalCoords(double x, double y, double a)
     {
+
         localCoords.rectCoords[0] = x;
         localCoords.rectCoords[1] = y;
         localCoords.angle = a;
+
     }
-    
-
-
 };
 
 class Renderer : public Component
@@ -68,26 +96,24 @@ public:
     
     Renderer() : Component() 
     {
-        Engine::getInstance().drawManager->renderers.push_back(this);
-        name = "Renderer";
+        std::list <Drawable> objectsToDraw;
+        name = typeid(Renderer).name();
     }
     
-    void registerRenderer()
-    {
 
-        return;
-    }
     
     void addDrawable(Drawable & X)
     {
         objectsToDraw.push_back(X);
     }
     
-    void addDrawable(sf::Sprite & X, int locx, int locy, int a)
+    void addDrawable(sf::Sprite & X, double locx, double locy, double a)
     {
-        Drawable newDrawable = X;
-        newDrawable.setLocalCoords(locx, locy, a);
-        objectsToDraw.push_back(newDrawable);
+       // std::cout << "addDrawable loc coords here are " << locx << " "<< locy << " " << std::endl;
+        Drawable myDrawable = X;
+
+        myDrawable.setLocalCoords(locx, locy, a);
+        objectsToDraw.push_back(myDrawable);
         
     }
     
@@ -96,6 +122,22 @@ public:
 };
 
 
+class Script : public Component
+{
+public:
+    virtual void start() = 0;
+    
+    virtual void update() = 0;
+    
+    Script(): Component()
+    {
+        name = typeid(Script).name();
+    }
+    ~Script()
+    {
+        
+    };
+};
 
 
 

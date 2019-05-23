@@ -7,12 +7,14 @@
 class DrawManager;
 class EventManager;
 class DataStorage;
+class LogicsManager;
+class PhysicsManager;
 class GameObject;
 
 class Engine
 {
 private:    
-    Engine() ;
+    Engine();
     Engine( const Engine&);  
     Engine& operator=( Engine& );
     
@@ -20,6 +22,9 @@ public:
     DrawManager* drawManager;
     EventManager* eventManager;
     DataStorage* dataStorage;
+    LogicsManager* logicsManager;
+    PhysicsManager* physicsManager;
+    
 
     
     void createGameObject(std::string name);

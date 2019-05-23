@@ -3,6 +3,8 @@
 #include "EventManager.h"
 #include "DrawManager.h"
 #include "GameObject.h"
+#include "PhysicsManager.h"
+#include <cassert>
 
 sf::RenderWindow* Engine::window()
 {
@@ -16,17 +18,19 @@ void Engine::createGameObject(std::string name)
 }
 
 GameObject* Engine::getGameObject(std::string name)
-{
+{   
+    GameObject* ptr = nullptr;
     auto Iter = dataStorage->gameObjects.find(name);
     if (Iter != dataStorage->gameObjects.end())
     {
-        return &(Iter->second);
+        ptr =  &(Iter->second);
     }
-    else
+    if (ptr == nullptr)
     {
-        
-        return nullptr;
+        std::cout<< "There is no such object" << std::endl;
     }
+    assert (ptr !=nullptr);
+    return ptr;
 }
 
 void Engine::deleteGameObject(std::string name)
@@ -47,6 +51,8 @@ Engine::Engine()
         drawManager = new DrawManager();
         eventManager = new EventManager();
         dataStorage = new DataStorage();
+        logicsManager = new LogicsManager();
+        physicsManager = new PhysicsManager();
 }
 
 

@@ -14,6 +14,7 @@ class DrawManager
 {
 public:
     std::list <Renderer*> renderers;
+    void registerRenderer(Renderer* );
     void draw();
     void display();
 }; 
